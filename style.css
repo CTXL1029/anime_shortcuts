@@ -209,7 +209,7 @@ body {
   }
 
   .anime-title {
-    font-size: 30px;
+    font-size: 177%; /*30px*/
   }
 
   .br-desktop {
@@ -229,7 +229,7 @@ body {
   }
 
   .anime-info h2 {
-    font-size: 65px;
+    font-size: 383%; /*65px*/
     text-align: center;
     margin-bottom: 20px;
   }
