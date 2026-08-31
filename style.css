@@ -148,14 +148,14 @@ body {
   position: fixed;
   z-index: 9999;
   left: 50%;
-  bottom: 30px;
+  top: -50px;
   transform: translateX(-50%);
   font-size: 16px;
   font-weight: 700;
   opacity: 0;
   transition:
     opacity 0.5s,
-    bottom 0.5s;
+    top 0.5s;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
   border: 1px solid #555;
   white-space: pre-line;
@@ -164,7 +164,7 @@ body {
 #toast.show {
   visibility: visible;
   opacity: 1;
-  bottom: 50px;
+  top: 30px;
 }
 
 @media (max-width: 768px) {
