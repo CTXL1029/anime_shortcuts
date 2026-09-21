@@ -52,23 +52,6 @@ function download3() {
   );
 }
 
-function copyText_4() {
-  const name =
-    "Ác Nữ Nửa Vời | Futsutsuka na Akujo dewa Gozaimasu ga: Suuguu Chouso Torikae Den";
-  navigator.clipboard.writeText(name).then(() => showToast(name));
-}
-
-function download4() {
-  window.open(
-    "https://nyaa.si/?f=0&c=0_0&q=%5BErai-raws%5D+Futsutsuka+na+Akujo+dewa+Gozaimasu+ga+1080p+CR+WEB-DL",
-    "_blank",
-  );
-  window.open(
-    "https://nyaa.si/?f=0&c=0_0&q=%5BToonsHub%5D+Though+I+Am+an+Inept+Villainess+1080p+NF+WEB-DL",
-    "_blank",
-  );
-}
-
 function copyText_5() {
   const name =
     "Cậu Và Tớ Là Hai Thái Cực Đối Lập Mùa 2 | Seihantai na Kimi to Boku 2nd Season";
