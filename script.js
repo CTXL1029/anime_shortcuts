@@ -24,18 +24,6 @@ function download1() {
   );
 }
 
-function copyText_2() {
-  const name = "Candy Caries | Candy Caries";
-  navigator.clipboard.writeText(name).then(() => showToast(name));
-}
-
-function download2() {
-  window.open(
-    "https://www.youtube.com/playlist?list=PLdM751AKK4aO1NT4ECieGCsB5XPxIxbv5",
-    "_blank",
-  );
-}
-
 function copyText_3() {
   const name = "Vẽ Cái Này Rồi Chết Đi | Kore Kaite Shine";
   navigator.clipboard.writeText(name).then(() => showToast(name));
