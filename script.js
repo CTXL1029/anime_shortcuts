@@ -56,20 +56,3 @@ function download5() {
     "_blank",
   );
 }
-
-function copyText_6() {
-  const name =
-    "Hiên Sau Siêu Thị Muộn Phiền Bay Đi | Super no Ura de Yani Suu Futari";
-  navigator.clipboard.writeText(name).then(() => showToast(name));
-}
-
-function download6() {
-  window.open(
-    "https://nyaa.si/?f=0&c=0_0&q=Smoking+Behind+the+Supermarket+With+You+1080p+NF+WEB-DL+MULTi+AAC2.0+H+264-VARYG",
-    "_blank",
-  );
-  window.open(
-    "https://nyaa.si/?f=0&c=0_0&q=%5BErai-raws%5D+Super+no+Ura+de+Yani+Suu+Futari+1080p+CR+WEB-DL+AVC+AAC",
-    "_blank",
-  );
-}
