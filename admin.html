@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin - Anime Shortcuts</title>
+    <link rel="icon" type="image/jpeg" href="assets/favicon.jpg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -355,11 +356,11 @@
 
       document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("ghOwner").value =
-          localStorage.getItem("gh_owner") || "";
+          localStorage.getItem("anime_gh_owner") || "";
         document.getElementById("ghRepo").value =
-          localStorage.getItem("gh_repo") || "";
+          localStorage.getItem("anime_gh_repo") || "";
         document.getElementById("ghToken").value =
-          localStorage.getItem("gh_token") || "";
+          localStorage.getItem("anime_gh_token") || "";
       });
 
       function saveConfig() {
@@ -375,7 +376,7 @@
           "gh_token",
           document.getElementById("ghToken").value.trim(),
         );
-        showStatus("success", "Đã lưu cấu hình GitHub!");
+        showStatus("success", "Đã lưu cấu hình GitHub cho trang Anime!");
       }
 
       function switchTab(tabId) {

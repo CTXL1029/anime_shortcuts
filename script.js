@@ -12,7 +12,7 @@ function showToast(text) {
 
 document.addEventListener("DOMContentLoaded", async () => {
   // Kiểm tra nếu có mã token GitHub thì hiện nút Admin (cái bút)
-  if (localStorage.getItem("gh_token")) {
+  if (localStorage.getItem("anime_gh_token")) {
     const adminBtn = document.createElement("a");
     adminBtn.href = "admin.html";
     adminBtn.className = "admin-float-btn";
