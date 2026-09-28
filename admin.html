@@ -204,7 +204,18 @@
 
       <!-- Cấu hình GitHub API -->
       <div class="card">
-        <h2><i class="fa-solid fa-gear"></i> Cấu hình GitHub</h2>
+        <h2>
+          <i class="fa-solid fa-gear"></i>
+          <span
+            >Cấu hình
+            <a
+              href="https://github.com/CTXL1029/anime_shortcuts"
+              target="_blank"
+              style="color: var(--primary-color); text-decoration: underline"
+              >GitHub</a
+            ></span
+          >
+        </h2>
         <div class="form-group">
           <input
             type="text"
@@ -256,7 +267,10 @@
       <div id="addTab" class="card tab-content active">
         <form id="addForm">
           <div class="form-group">
-            <label>Tên Anime hiển thị (Cho phép dùng &lt;br&gt;):</label>
+            <label
+              >Tên Anime hiển thị (Cho phép dùng &lt;br class
+              ="br-mobile"&gt;):</label
+            >
             <input
               type="text"
               id="addTitle"
@@ -356,11 +370,11 @@
 
       document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("ghOwner").value =
-          localStorage.getItem("anime_gh_owner") || "";
+          localStorage.getItem("gh_owner") || "";
         document.getElementById("ghRepo").value =
-          localStorage.getItem("anime_gh_repo") || "";
+          localStorage.getItem("gh_repo") || "";
         document.getElementById("ghToken").value =
-          localStorage.getItem("anime_gh_token") || "";
+          localStorage.getItem("gh_token") || "";
       });
 
       function saveConfig() {
@@ -620,14 +634,8 @@
       }
 
       function removeAnimeFromList(id) {
-        if (
-          confirm(
-            "Xóa anime này khỏi danh sách? (Chỉ xóa trên giao diện, file ảnh poster vẫn sẽ giữ trên repo)",
-          )
-        ) {
-          currentAnimeData = currentAnimeData.filter((a) => a.id !== id);
-          renderDeleteList();
-        }
+        currentAnimeData = currentAnimeData.filter((a) => a.id !== id);
+        renderDeleteList();
       }
 
       async function commitDelete() {
