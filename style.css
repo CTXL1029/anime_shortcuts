@@ -240,3 +240,32 @@ body {
     gap: 30px;
   }
 }
+
+/* Nút nổi chuyển sang trang Admin */
+.admin-float-btn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 55px;
+  height: 55px;
+  background-color: #4da6ff;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  z-index: 1000;
+  text-decoration: none;
+  transition:
+    transform 0.2s,
+    background-color 0.2s;
+}
+
+.admin-float-btn:hover {
+  transform: scale(1.1);
+  background-color: #3388dd;
+  color: #fff;
+}

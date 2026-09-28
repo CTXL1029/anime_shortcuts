@@ -7,12 +7,16 @@
     <link rel="icon" type="image/jpeg" href="assets/favicon.jpg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="style.css" />
-    <script src="script.js" defer></script>
     <link
       href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;700;800;900&display=swap"
       rel="stylesheet"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script src="script.js" defer></script>
   </head>
   <body>
     <div class="container">
@@ -37,97 +41,9 @@
         </a>
       </header>
 
-      <main class="anime-list">
-        <article class="anime-item">
-          <div class="anime-visual">
-            <img
-              src="kv/KimiShinu.webp"
-              alt="KimiShinu"
-              onclick="download1()"
-            />
-            <p class="anime-title" onclick="copyText_1()">
-              Yêu Nhau Đến Tận <br class="br-mobile" />
-              Ngày Cậu Biến Mất
-            </p>
-          </div>
-          <div class="anime-info">
-            <h2>Raw: Thứ Ba</h2>
-            <div class="button-group">
-              <a
-                href="https://myanimelist.net/anime/61126/Kimi_ga_Shinu_made_Koi_wo_Shitai"
-                target="_blank"
-                rel="noopener noreferrer"
-                ><img src="assets/MAL-Btn.webp" alt="MyAnimeList"
-              /></a>
-              <a
-                href="https://animeschedule.net/anime/kimi-ga-shinu-made-koi-wo-shitai"
-                target="_blank"
-                rel="noopener noreferrer"
-                ><img src="assets/AS-Btn.webp" alt="AnimeSchedule"
-              /></a>
-            </div>
-          </div>
-        </article>
-
-        <article class="anime-item">
-          <div class="anime-visual">
-            <img
-              src="kv/Korekaite-shine.webp"
-              alt="Kore Kaite Shine"
-              onclick="download3()"
-            />
-            <p class="anime-title" onclick="copyText_3()">
-              Vẽ Cái Này Rồi Chết Đi
-            </p>
-          </div>
-          <div class="anime-info">
-            <h2>Raw: Thứ Sáu</h2>
-            <div class="button-group">
-              <a
-                href="https://myanimelist.net/anime/61280/Kore_Kaite_Shine"
-                target="_blank"
-                rel="noopener noreferrer"
-                ><img src="assets/MAL-Btn.webp" alt="MyAnimeList"
-              /></a>
-              <a
-                href="https://animeschedule.net/anime/kore-kaite-shine"
-                target="_blank"
-                rel="noopener noreferrer"
-                ><img src="assets/AS-Btn.webp" alt="AnimeSchedule"
-              /></a>
-            </div>
-          </div>
-        </article>
-
-        <article class="anime-item">
-          <div class="anime-visual">
-            <img
-              src="kv/Seihantai-SS2.webp"
-              alt="Seihantai SS2"
-              onclick="download5()"
-            />
-            <p class="anime-title" onclick="copyText_5()">
-              Cậu Và Tớ Là Hai Thái Cực Đối Lập Mùa 2
-            </p>
-          </div>
-          <div class="anime-info">
-            <h2>Raw: Chủ Nhật</h2>
-            <div class="button-group">
-              <a
-                href="https://myanimelist.net/anime/63832/Seihantai_na_Kimi_to_Boku_2nd_Season"
-                target="_blank"
-                rel="noopener noreferrer"
-                ><img src="assets/MAL-Btn.webp" alt="MyAnimeList"
-              /></a>
-              <a
-                href="https://animeschedule.net/anime/seihantai-na-kimi-to-boku-2nd-season"
-                target="_blank"
-                rel="noopener noreferrer"
-                ><img src="assets/AS-Btn.webp" alt="AnimeSchedule"
-              /></a>
-            </div>
-          </div>
-        </article>
+      <!-- Khung chứa dữ liệu sẽ được JavaScript nhét vào đây -->
+      <main class="anime-list" id="animeListContainer">
+        <!-- JS rendered content -->
       </main>
     </div>
 

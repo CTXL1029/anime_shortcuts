@@ -5,54 +5,84 @@ function showToast(text) {
   toast.classList.add("show");
 
   clearTimeout(toastTimeout);
-
   toastTimeout = setTimeout(function () {
     toast.classList.remove("show");
   }, 3000);
 }
 
-function copyText_1() {
-  const name =
-    "Yêu Nhau Đến Tận Ngày Cậu Biến Mất | Kimi ga Shinu made Koi wo Shitai";
-  navigator.clipboard.writeText(name).then(() => showToast(name));
-}
+document.addEventListener("DOMContentLoaded", async () => {
+  // Kiểm tra nếu có mã token GitHub thì hiện nút Admin (cái bút)
+  if (localStorage.getItem("gh_token")) {
+    const adminBtn = document.createElement("a");
+    adminBtn.href = "admin.html";
+    adminBtn.className = "admin-float-btn";
+    adminBtn.innerHTML = '<i class="fa-solid fa-pen"></i>';
+    document.body.appendChild(adminBtn);
+  }
 
-function download1() {
-  window.open(
-    "https://nyaa.si/?f=0&c=0_0&q=%5BErai-raws%5D+Kimi+ga+Shinu+made+Koi+wo+Shitai+1080p+CR+WEB-DL",
-    "_blank",
-  );
-}
+  // Lấy dữ liệu anime (thêm timestamp để tránh bị trình duyệt lưu cache)
+  try {
+    const res = await fetch("data.json?t=" + new Date().getTime());
+    if (!res.ok) throw new Error("Network response was not ok");
+    const animes = await res.json();
+    renderAnimes(animes);
+  } catch (error) {
+    console.error("Lỗi tải danh sách anime:", error);
+  }
+});
 
-function copyText_3() {
-  const name = "Vẽ Cái Này Rồi Chết Đi | Kore Kaite Shine";
-  navigator.clipboard.writeText(name).then(() => showToast(name));
-}
+function renderAnimes(animes) {
+  const container = document.getElementById("animeListContainer");
+  container.innerHTML = "";
 
-function download3() {
-  window.open(
-    "https://nyaa.si/?f=0&c=0_0&q=%5BToonsHub%5D+Draw+This+Then+Die+1080p+NF",
-    "_blank",
-  );
-  window.open(
-    "https://nyaa.si/?f=0&c=0_0&q=%5BSubsPlease%5D+Kore+Kaite+Shine+1080p",
-    "_blank",
-  );
-}
+  animes.forEach((anime) => {
+    const article = document.createElement("article");
+    article.className = "anime-item";
 
-function copyText_5() {
-  const name =
-    "Cậu Và Tớ Là Hai Thái Cực Đối Lập Mùa 2 | Seihantai na Kimi to Boku 2nd Season";
-  navigator.clipboard.writeText(name).then(() => showToast(name));
-}
+    // --- Cột trái: Ảnh và Tên ---
+    const visual = document.createElement("div");
+    visual.className = "anime-visual";
 
-function download5() {
-  window.open(
-    "https://fptplay.vn/xem-video/cau-va-to-la-hai-thai-cuc-doi-lap-mua-2-you-and-i-are-polar-opposites-season-2-6a487c43205e85d46ddbce66.html",
-    "_blank",
-  );
-  window.open(
-    "https://nyaa.si/?q=%5BErai-raws%5D+Seihantai+na+Kimi+to+Boku+2nd+Season+CR+1080p&f=0&c=0_0",
-    "_blank",
-  );
+    const img = document.createElement("img");
+    img.src = anime.poster;
+    img.alt = anime.title.replace(/<[^>]*>?/gm, ""); // Xóa tag HTML đi lấy alt
+    img.onclick = () => {
+      if (anime.watchLinks && anime.watchLinks.length > 0) {
+        anime.watchLinks.forEach((link) => {
+          if (link && link.trim() !== "") window.open(link, "_blank");
+        });
+      }
+    };
+
+    const title = document.createElement("p");
+    title.className = "anime-title";
+    title.innerHTML = anime.title;
+    title.onclick = () => {
+      navigator.clipboard
+        .writeText(anime.copyText)
+        .then(() => showToast(anime.copyText));
+    };
+
+    visual.appendChild(img);
+    visual.appendChild(title);
+
+    // --- Cột phải: Thông tin và Nút ---
+    const info = document.createElement("div");
+    info.className = "anime-info";
+    info.innerHTML = `
+      <h2>Raw: ${anime.rawDay}</h2>
+      <div class="button-group">
+        <a href="${anime.malLink}" target="_blank" rel="noopener noreferrer">
+          <img src="assets/MAL-Btn.webp" alt="MyAnimeList" />
+        </a>
+        <a href="${anime.asLink}" target="_blank" rel="noopener noreferrer">
+          <img src="assets/AS-Btn.webp" alt="AnimeSchedule" />
+        </a>
+      </div>
+    `;
+
+    article.appendChild(visual);
+    article.appendChild(info);
+    container.appendChild(article);
+  });
 }
