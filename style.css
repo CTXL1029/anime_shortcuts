@@ -248,7 +248,7 @@ body {
   right: 30px;
   width: 55px;
   height: 55px;
-  background-color: #4da6ff;
+  background-color: #b2b2b2;
   color: #fff;
   border-radius: 50%;
   display: flex;
@@ -266,6 +266,6 @@ body {
 
 .admin-float-btn:hover {
   transform: scale(1.1);
-  background-color: #3388dd;
+  background-color: #b2b2b2;
   color: #fff;
 }
