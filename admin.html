@@ -370,24 +370,24 @@
 
       document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("ghOwner").value =
-          localStorage.getItem("gh_owner") || "";
+          localStorage.getItem("anime_gh_owner") || "";
         document.getElementById("ghRepo").value =
-          localStorage.getItem("gh_repo") || "";
+          localStorage.getItem("anime_gh_repo") || "";
         document.getElementById("ghToken").value =
-          localStorage.getItem("gh_token") || "";
+          localStorage.getItem("anime_gh_token") || "";
       });
 
       function saveConfig() {
         localStorage.setItem(
-          "gh_owner",
+          "anime_gh_owner",
           document.getElementById("ghOwner").value.trim(),
         );
         localStorage.setItem(
-          "gh_repo",
+          "anime_gh_repo",
           document.getElementById("ghRepo").value.trim(),
         );
         localStorage.setItem(
-          "gh_token",
+          "anime_gh_token",
           document.getElementById("ghToken").value.trim(),
         );
         showStatus("success", "Đã lưu cấu hình GitHub cho trang Anime!");
