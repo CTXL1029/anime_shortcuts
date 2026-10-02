@@ -267,15 +267,12 @@
       <div id="addTab" class="card tab-content active">
         <form id="addForm">
           <div class="form-group">
-            <label
-              >Tên Anime hiển thị (Cho phép dùng &lt;br class
-              ="br-mobile"&gt;):</label
-            >
+            <label>Tên Anime hiển thị (Dùng ^ hoặc # để xuống dòng ở Desktop, ^^ hoặc ## để xuống dòng ở Mobile):</label>
             <input
               type="text"
               id="addTitle"
               required
-              placeholder='Ví dụ: Yêu Nhau <br class="br-mobile" />Ngày Cậu Biến Mất'
+              placeholder="Ví dụ: Ác Nữ Nửa Vời## - Truyền Kì #Hoán Hồn Đổi Xác"
             />
           </div>
           <div class="form-group">
@@ -497,9 +494,16 @@
             // 1. Chuẩn bị dữ liệu
             const posterFile =
               document.getElementById("addPosterFile").files[0];
+            
+            // Xử lý xuống dòng với ký tự ^^/## cho mobile và ^/# cho desktop
+            const rawTitle = document.getElementById("addTitle").value.trim();
+            const parsedTitle = rawTitle
+              .replace(/\^\^|##/g, '<br class="br-mobile" />')
+              .replace(/\^|#/g, '<br class="br-desktop" />');
+
             const newAnime = {
               id: Date.now(),
-              title: document.getElementById("addTitle").value.trim(),
+              title: parsedTitle,
               copyText: document.getElementById("addCopyText").value.trim(),
               poster: `kv/${posterFile.name}`,
               rawDay: document.getElementById("addRawDay").value.trim(),
