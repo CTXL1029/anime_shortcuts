@@ -267,7 +267,10 @@
       <div id="addTab" class="card tab-content active">
         <form id="addForm">
           <div class="form-group">
-            <label>Tên Anime hiển thị (Dùng ^ hoặc # để xuống dòng ở Desktop, ^^ hoặc ## để xuống dòng ở Mobile):</label>
+            <label
+              >Tên Anime hiển thị (Dùng ^ hoặc # để xuống dòng ở Desktop, ^^
+              hoặc ## để xuống dòng ở Mobile):</label
+            >
             <input
               type="text"
               id="addTitle"
@@ -326,7 +329,7 @@
             <input
               type="text"
               id="addWatch1"
-              placeholder="https://nyaa.si/..."
+              placeholder="https://fptplay.vn/..."
             />
           </div>
           <div class="form-group">
@@ -334,7 +337,7 @@
             <input
               type="text"
               id="addWatch2"
-              placeholder="https://fptplay.vn/..."
+              placeholder="https://nyaa.si/..."
             />
           </div>
 
@@ -366,8 +369,6 @@
       let currentAnimeData = []; // Mảng chứa dữ liệu anime để thao tác lúc xóa
 
       document.addEventListener("DOMContentLoaded", () => {
-        document.getElementById("ghOwner").value =
-          localStorage.getItem("anime_gh_owner") || "";
         document.getElementById("ghRepo").value =
           localStorage.getItem("anime_gh_repo") || "";
         document.getElementById("ghToken").value =
@@ -375,10 +376,6 @@
       });
 
       function saveConfig() {
-        localStorage.setItem(
-          "anime_gh_owner",
-          document.getElementById("ghOwner").value.trim(),
-        );
         localStorage.setItem(
           "anime_gh_repo",
           document.getElementById("ghRepo").value.trim(),
@@ -427,8 +424,8 @@
       }
 
       // API GitHub Helpers
-      async function githubGetFile(owner, repo, token, path) {
-        const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+      async function githubGetFile(repo, token, path) {
+        const url = `https://api.github.com/repos/CTXL1029/${repo}/contents/${path}`;
         const res = await fetch(url, {
           headers: { Authorization: `Bearer ${token}` },
           cache: "no-store",
@@ -439,7 +436,6 @@
       }
 
       async function githubPutFile(
-        owner,
         repo,
         token,
         path,
@@ -447,7 +443,7 @@
         message,
         sha = null,
       ) {
-        const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+        const url = `https://api.github.com/repos/CTXL1029/${repo}/contents/${path}`;
         const body = { message, content: base64Content };
         if (sha) body.sha = sha;
 
@@ -473,12 +469,10 @@
       }
 
       function getConfig() {
-        const owner = document.getElementById("ghOwner").value.trim();
         const repo = document.getElementById("ghRepo").value.trim();
         const token = document.getElementById("ghToken").value.trim();
-        if (!owner || !repo || !token)
-          throw new Error("Thiếu cấu hình Owner, Repo hoặc Token!");
-        return { owner, repo, token };
+        if (!repo || !token) throw new Error("Thiếu cấu hình Repo hoặc Token!");
+        return { repo, token };
       }
 
       // === XỬ LÝ FORM THÊM ANIME ===
@@ -494,7 +488,7 @@
             // 1. Chuẩn bị dữ liệu
             const posterFile =
               document.getElementById("addPosterFile").files[0];
-            
+
             // Xử lý xuống dòng với ký tự ^^/## cho mobile và ^/# cho desktop
             const rawTitle = document.getElementById("addTitle").value.trim();
             const parsedTitle = rawTitle
@@ -524,13 +518,11 @@
             // Xem ảnh cũ có không để ghi đè, nếu ko thì tạo mới (GitHub yêu cầu SHA nếu ghi đè)
             const imgPath = `kv/${posterFile.name}`;
             const existingImg = await githubGetFile(
-              conf.owner,
               conf.repo,
               conf.token,
               imgPath,
             );
             await githubPutFile(
-              conf.owner,
               conf.repo,
               conf.token,
               imgPath,
@@ -542,7 +534,6 @@
             // 3. Lấy file data.json hiện tại
             showStatus("info", "⏳ Đang cập nhật data.json...");
             const dataFile = await githubGetFile(
-              conf.owner,
               conf.repo,
               conf.token,
               "data.json",
@@ -561,7 +552,6 @@
             const newJsonStr = JSON.stringify(animes, null, 2);
             const newBase64Json = encodeBase64UTF8(newJsonStr);
             await githubPutFile(
-              conf.owner,
               conf.repo,
               conf.token,
               "data.json",
@@ -593,7 +583,6 @@
         try {
           const conf = getConfig();
           const dataFile = await githubGetFile(
-            conf.owner,
             conf.repo,
             conf.token,
             "data.json",
@@ -658,7 +647,6 @@
 
           // Phải lấy sha mới nhất của data.json
           const dataFile = await githubGetFile(
-            conf.owner,
             conf.repo,
             conf.token,
             "data.json",
@@ -668,7 +656,6 @@
           const newJsonStr = JSON.stringify(currentAnimeData, null, 2);
           const newBase64Json = encodeBase64UTF8(newJsonStr);
           await githubPutFile(
-            conf.owner,
             conf.repo,
             conf.token,
             "data.json",
