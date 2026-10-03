@@ -1,3 +1,4 @@
+<!-- --- START OF FILE admin.html --- -->
 <!doctype html>
 <html lang="vi">
   <head>
@@ -64,7 +65,8 @@
         font-size: 0.9rem;
       }
       input[type="text"],
-      input[type="password"] {
+      input[type="password"],
+      input[type="time"] {
         width: 100%;
         padding: 10px 12px;
         border: 1px solid var(--border-color);
@@ -94,11 +96,6 @@
       .btn-submit:disabled {
         background: #94a3b8;
         cursor: not-allowed;
-      }
-      .file-hint {
-        font-size: 0.8rem;
-        color: #64748b;
-        margin-top: 4px;
       }
 
       /* Tabs System */
@@ -291,15 +288,25 @@
               style="width: 100%"
             />
           </div>
-          <div class="form-group">
-            <label>Raw (Lịch ra tập mới):</label>
-            <input
-              type="text"
-              id="addRawDay"
-              required
-              placeholder="Ví dụ: Thứ Ba"
-            />
+
+          <!-- HÀNG CHỌN RAW (NGÀY + GIỜ) -->
+          <div style="display: flex; gap: 15px">
+            <div class="form-group" style="flex: 1">
+              <label>Raw (Lịch ra tập mới):</label>
+              <input
+                type="text"
+                id="addRawDay"
+                required
+                placeholder="Ví dụ: Thứ Ba"
+              />
+            </div>
+            <div class="form-group" style="flex: 1">
+              <label>Giờ (Để trống nếu ko rõ):</label>
+              <input type="time" id="addRawTime" />
+            </div>
           </div>
+          <!-- KẾT THÚC RAW -->
+
           <div class="form-group">
             <label>Link MyAnimeList:</label>
             <input
@@ -360,7 +367,7 @@
     </div>
 
     <script>
-      let currentAnimeData = []; // Mảng chứa dữ liệu anime để thao tác lúc xóa
+      let currentAnimeData = [];
 
       document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("ghRepo").value =
@@ -391,11 +398,9 @@
 
         event.target.closest(".tab-btn").classList.add("active");
         document.getElementById(tabId + "Tab").classList.add("active");
-        showStatus("", ""); // clear status
+        showStatus("", "");
 
-        if (tabId === "delete") {
-          loadDataForDelete();
-        }
+        if (tabId === "delete") loadDataForDelete();
       }
 
       function showStatus(type, message) {
@@ -409,7 +414,6 @@
         box.innerHTML = message;
       }
 
-      // Tiện ích mã hóa an toàn cho Tiếng Việt
       function encodeBase64UTF8(str) {
         return btoa(unescape(encodeURIComponent(str)));
       }
@@ -417,7 +421,32 @@
         return decodeURIComponent(escape(atob(b64.replace(/\s/g, ""))));
       }
 
-      // API GitHub Helpers
+      // Hàm Helpers sắp xếp thời gian (giống y file ngoài)
+      function getDayValue(dayStr) {
+        if (!dayStr) return 99;
+        const normalized = String(dayStr).toLowerCase().trim();
+        if (normalized.includes("hai") || normalized === "t2") return 1;
+        if (normalized.includes("ba") || normalized === "t3") return 2;
+        if (normalized.includes("tư") || normalized === "t4") return 3;
+        if (normalized.includes("năm") || normalized === "t5") return 4;
+        if (normalized.includes("sáu") || normalized === "t6") return 5;
+        if (normalized.includes("bảy") || normalized === "t7") return 6;
+        if (normalized.includes("chủ nhật") || normalized === "cn") return 7;
+        return 99;
+      }
+
+      function getTimeMinutes(timeStr) {
+        if (!timeStr) return 1440;
+        const parts = timeStr.split(":");
+        if (parts.length >= 2) {
+          const h = parseInt(parts[0], 10) || 0;
+          const m = parseInt(parts[1], 10) || 0;
+          return h * 60 + m;
+        }
+        return 1440;
+      }
+
+      // GitHub API
       async function githubGetFile(repo, token, path) {
         const url = `https://api.github.com/repos/CTXL1029/${repo}/contents/${path}`;
         const res = await fetch(url, {
@@ -479,11 +508,8 @@
             const conf = getConfig();
             btn.disabled = true;
 
-            // 1. Chuẩn bị dữ liệu
             const posterFile =
               document.getElementById("addPosterFile").files[0];
-
-            // Xử lý xuống dòng với ký tự ^^/## cho mobile và ^/# cho desktop
             const rawTitle = document.getElementById("addTitle").value.trim();
             const parsedTitle = rawTitle
               .replace(/\^\^|##/g, '<br class="br-mobile" />')
@@ -495,6 +521,7 @@
               copyText: document.getElementById("addCopyText").value.trim(),
               poster: `kv/${posterFile.name}`,
               rawDay: document.getElementById("addRawDay").value.trim(),
+              rawTime: document.getElementById("addRawTime").value, // LẤY THÊM GIỜ TỪ FORM
               malLink: document.getElementById("addMal").value.trim(),
               asLink: document.getElementById("addAs").value.trim(),
               watchLinks: [],
@@ -505,11 +532,8 @@
             if (w1) newAnime.watchLinks.push(w1);
             if (w2) newAnime.watchLinks.push(w2);
 
-            // 2. Upload file ảnh
             showStatus("info", "⏳ Đang tải Poster lên GitHub...");
             const imageBase64 = await fileToBase64(posterFile);
-
-            // Xem ảnh cũ có không để ghi đè, nếu ko thì tạo mới (GitHub yêu cầu SHA nếu ghi đè)
             const imgPath = `kv/${posterFile.name}`;
             const existingImg = await githubGetFile(
               conf.repo,
@@ -525,7 +549,6 @@
               existingImg ? existingImg.sha : null,
             );
 
-            // 3. Lấy file data.json hiện tại
             showStatus("info", "⏳ Đang cập nhật data.json...");
             const dataFile = await githubGetFile(
               conf.repo,
@@ -539,10 +562,15 @@
               dataSha = dataFile.sha;
             }
 
-            // Đẩy anime mới lên đầu danh sách
-            animes.unshift(newAnime);
+            animes.push(newAnime);
 
-            // 4. Lưu data.json
+            // SẮP XẾP LẠI TOÀN BỘ JSON THEO NGÀY VÀ GIỜ TRƯỚC KHI ĐẨY LÊN GITHUB
+            animes.sort((a, b) => {
+              const dayDiff = getDayValue(a.rawDay) - getDayValue(b.rawDay);
+              if (dayDiff !== 0) return dayDiff;
+              return getTimeMinutes(a.rawTime) - getTimeMinutes(b.rawTime);
+            });
+
             const newJsonStr = JSON.stringify(animes, null, 2);
             const newBase64Json = encodeBase64UTF8(newJsonStr);
             await githubPutFile(
@@ -586,6 +614,13 @@
             currentAnimeData = [];
           } else {
             currentAnimeData = JSON.parse(decodeBase64UTF8(dataFile.content));
+
+            // Xếp luôn trong giao diện Xoá để dễ nhìn
+            currentAnimeData.sort((a, b) => {
+              const dayDiff = getDayValue(a.rawDay) - getDayValue(b.rawDay);
+              if (dayDiff !== 0) return dayDiff;
+              return getTimeMinutes(a.rawTime) - getTimeMinutes(b.rawTime);
+            });
           }
           renderDeleteList();
           btn.style.display = "flex";
@@ -607,11 +642,11 @@
           const item = document.createElement("div");
           item.className = "delete-item";
 
-          // Loại bỏ HTML thừa khi hiển thị tên
           const cleanTitle = anime.title.replace(/<[^>]*>?/gm, "");
+          const timeDisplay = anime.rawTime ? ` - ${anime.rawTime}` : ""; // HIỂN THỊ THÊM GIỜ LÚC XOÁ CHO DỄ NHÌN
 
           item.innerHTML = `
-          <div class="delete-title" title="${cleanTitle}">${cleanTitle}</div>
+          <div class="delete-title" title="${cleanTitle}">${cleanTitle} <br/><span style="font-size:0.8rem; color:#64748b;">(Lịch: ${anime.rawDay}${timeDisplay})</span></div>
           <button class="btn-trash" onclick="removeAnimeFromList(${anime.id})" title="Xóa">
             <i class="fa-solid fa-trash"></i>
           </button>
@@ -639,7 +674,6 @@
           const conf = getConfig();
           showStatus("info", "⏳ Đang lưu dữ liệu cập nhật...");
 
-          // Phải lấy sha mới nhất của data.json
           const dataFile = await githubGetFile(
             conf.repo,
             conf.token,
