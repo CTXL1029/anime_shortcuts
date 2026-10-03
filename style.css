@@ -248,14 +248,12 @@ body {
   right: 30px;
   width: 55px;
   height: 55px;
-  background-color: #b2b2b2;
   color: #fff;
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 24px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
   cursor: pointer;
   z-index: 1000;
   text-decoration: none;
@@ -268,4 +266,5 @@ body {
   transform: scale(1.1);
   background-color: #b2b2b2;
   color: #fff;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
 }
