@@ -1,4 +1,3 @@
-<!-- --- START OF FILE admin.html --- -->
 <!doctype html>
 <html lang="vi">
   <head>
@@ -153,18 +152,23 @@
         border: 1px solid #fecaca;
       }
 
-      /* Delete List */
-      .delete-item {
+      /* Edit List */
+      .edit-item {
         display: flex;
         justify-content: space-between;
         align-items: center;
         padding: 12px;
         border-bottom: 1px solid var(--border-color);
+        cursor: pointer;
+        transition: 0.2s;
       }
-      .delete-item:last-child {
+      .edit-item:hover {
+        background: #f1f5f9;
+      }
+      .edit-item:last-child {
         border-bottom: none;
       }
-      .delete-title {
+      .edit-title {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -247,8 +251,8 @@
         <button class="tab-btn active" onclick="switchTab('add')">
           <i class="fa-solid fa-plus-circle"></i> Thêm Anime
         </button>
-        <button class="tab-btn" onclick="switchTab('delete')">
-          <i class="fa-solid fa-trash"></i> Xóa Anime
+        <button class="tab-btn" onclick="switchTab('edit')">
+          <i class="fa-solid fa-pen"></i> Sửa Anime
         </button>
       </div>
 
@@ -348,26 +352,139 @@
         </form>
       </div>
 
-      <!-- Tab XÓA -->
-      <div id="deleteTab" class="card tab-content">
-        <div id="deleteListContainer">
-          <!-- Danh sách sẽ được chèn vào đây -->
+      <!-- Tab SỬA -->
+      <div id="editTab" class="card tab-content">
+        <div id="editListView">
+          <div id="editListContainer">
+            <!-- Danh sách sẽ được chèn vào đây -->
+          </div>
+          <button
+            type="button"
+            class="btn-submit"
+            id="editSubmitBtn"
+            onclick="commitEdit()"
+            style="background: #dc2626; margin-top: 20px; display: none"
+          >
+            <i class="fa-solid fa-floppy-disk"></i> Lưu thay đổi (Cập nhật lên
+            Web)
+          </button>
         </div>
-        <button
-          type="button"
-          class="btn-submit"
-          id="deleteSubmitBtn"
-          onclick="commitDelete()"
-          style="background: #dc2626; margin-top: 20px; display: none"
-        >
-          <i class="fa-solid fa-floppy-disk"></i> Lưu thay đổi (Cập nhật lên
-          Web)
-        </button>
+
+        <div id="editFormView" style="display: none">
+          <button
+            type="button"
+            onclick="closeEditForm()"
+            style="
+              margin-bottom: 15px;
+              color: var(--primary-color);
+              background: none;
+              border: none;
+              font-weight: bold;
+              cursor: pointer;
+              display: flex;
+              align-items: center;
+              gap: 8px;
+            "
+          >
+            <i class="fa-solid fa-arrow-left"></i> Quay lại danh sách
+          </button>
+          <form id="editAnimeForm">
+            <input type="hidden" id="editId" />
+            <div class="form-group">
+              <label
+                >Tên Anime hiển thị (Dùng ^ hoặc # để xuống dòng ở Desktop, ^^
+                hoặc ## để xuống dòng ở Mobile):</label
+              >
+              <input type="text" id="editTitle" required />
+            </div>
+            <div class="form-group">
+              <label>Tên chuẩn để Copy (Khi click vào tên):</label>
+              <input type="text" id="editCopyText" required />
+            </div>
+            <div class="form-group">
+              <label
+                >Ảnh Poster (Để trống nếu không đổi, * Giữ nguyên tên file khi
+                up lên kv/):</label
+              >
+              <input
+                type="file"
+                id="editPosterFile"
+                accept="image/*"
+                style="width: 100%"
+              />
+              <small
+                id="editCurrentPoster"
+                style="
+                  display: block;
+                  margin-top: 6px;
+                  color: #64748b;
+                  font-weight: bold;
+                "
+              ></small>
+            </div>
+
+            <div style="display: flex; gap: 15px">
+              <div class="form-group" style="flex: 1">
+                <label>Raw (Lịch ra tập mới):</label>
+                <input
+                  type="text"
+                  id="editRawDay"
+                  required
+                  placeholder="Ví dụ: Thứ Ba"
+                />
+              </div>
+              <div class="form-group" style="flex: 1">
+                <label>Giờ (Để trống nếu ko rõ):</label>
+                <input type="time" id="editRawTime" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Link MyAnimeList:</label>
+              <input
+                type="text"
+                id="editMal"
+                required
+                placeholder="https://myanimelist.net/..."
+              />
+            </div>
+            <div class="form-group">
+              <label>Link AnimeSchedule:</label>
+              <input
+                type="text"
+                id="editAs"
+                required
+                placeholder="https://animeschedule.net/..."
+              />
+            </div>
+            <div class="form-group">
+              <label>Link Xem / Tải 1:</label>
+              <input
+                type="text"
+                id="editWatch1"
+                placeholder="https://fptplay.vn/..."
+              />
+            </div>
+            <div class="form-group">
+              <label>Link Xem / Tải 2 (Không có thì bỏ trống):</label>
+              <input
+                type="text"
+                id="editWatch2"
+                placeholder="https://nyaa.si/..."
+              />
+            </div>
+
+            <button type="submit" class="btn-submit" id="editSaveBtn">
+              <i class="fa-solid fa-cloud-arrow-up"></i> Cập nhật Anime
+            </button>
+          </form>
+        </div>
       </div>
     </div>
 
     <script>
       let currentAnimeData = [];
+      let deletedPosters = []; // Mảng chứa các poster có thể bị xóa
 
       document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("ghRepo").value =
@@ -400,7 +517,11 @@
         document.getElementById(tabId + "Tab").classList.add("active");
         showStatus("", "");
 
-        if (tabId === "delete") loadDataForDelete();
+        if (tabId === "edit") {
+          document.getElementById("editListView").style.display = "block";
+          document.getElementById("editFormView").style.display = "none";
+          loadDataForEdit();
+        }
       }
 
       function showStatus(type, message) {
@@ -421,7 +542,7 @@
         return decodeURIComponent(escape(atob(b64.replace(/\s/g, ""))));
       }
 
-      // Hàm Helpers sắp xếp thời gian (giống y file ngoài)
+      // Hàm Helpers sắp xếp thời gian
       function getDayValue(dayStr) {
         if (!dayStr) return 99;
         const normalized = String(dayStr).toLowerCase().trim();
@@ -446,7 +567,7 @@
         return 1440;
       }
 
-      // GitHub API
+      // GitHub API GET
       async function githubGetFile(repo, token, path) {
         const url = `https://api.github.com/repos/CTXL1029/${repo}/contents/${path}`;
         const res = await fetch(url, {
@@ -458,6 +579,7 @@
         return await res.json();
       }
 
+      // GitHub API PUT
       async function githubPutFile(
         repo,
         token,
@@ -479,6 +601,21 @@
           body: JSON.stringify(body),
         });
         if (!res.ok) throw new Error("Lỗi cập nhật file lên GitHub");
+        return await res.json();
+      }
+
+      // GitHub API DELETE
+      async function githubDeleteFile(repo, token, path, message, sha) {
+        const url = `https://api.github.com/repos/CTXL1029/${repo}/contents/${path}`;
+        const res = await fetch(url, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ message, sha }),
+        });
+        if (!res.ok) throw new Error("Lỗi xóa file trên GitHub");
         return await res.json();
       }
 
@@ -521,7 +658,7 @@
               copyText: document.getElementById("addCopyText").value.trim(),
               poster: `kv/${posterFile.name}`,
               rawDay: document.getElementById("addRawDay").value.trim(),
-              rawTime: document.getElementById("addRawTime").value, // LẤY THÊM GIỜ TỪ FORM
+              rawTime: document.getElementById("addRawTime").value,
               malLink: document.getElementById("addMal").value.trim(),
               asLink: document.getElementById("addAs").value.trim(),
               watchLinks: [],
@@ -564,7 +701,6 @@
 
             animes.push(newAnime);
 
-            // SẮP XẾP LẠI TOÀN BỘ JSON THEO NGÀY VÀ GIỜ TRƯỚC KHI ĐẨY LÊN GITHUB
             animes.sort((a, b) => {
               const dayDiff = getDayValue(a.rawDay) - getDayValue(b.rawDay);
               if (dayDiff !== 0) return dayDiff;
@@ -594,13 +730,14 @@
           }
         });
 
-      // === XỬ LÝ TAB XÓA ANIME ===
-      async function loadDataForDelete() {
-        const container = document.getElementById("deleteListContainer");
-        const btn = document.getElementById("deleteSubmitBtn");
+      // === XỬ LÝ TAB SỬA ANIME ===
+      async function loadDataForEdit() {
+        const container = document.getElementById("editListContainer");
+        const btn = document.getElementById("editSubmitBtn");
         container.innerHTML =
           "<p style='text-align:center;'>⏳ Đang kéo dữ liệu từ GitHub...</p>";
         btn.style.display = "none";
+        deletedPosters = []; // Reset danh sách poster cần xóa
 
         try {
           const conf = getConfig();
@@ -614,23 +751,21 @@
             currentAnimeData = [];
           } else {
             currentAnimeData = JSON.parse(decodeBase64UTF8(dataFile.content));
-
-            // Xếp luôn trong giao diện Xoá để dễ nhìn
             currentAnimeData.sort((a, b) => {
               const dayDiff = getDayValue(a.rawDay) - getDayValue(b.rawDay);
               if (dayDiff !== 0) return dayDiff;
               return getTimeMinutes(a.rawTime) - getTimeMinutes(b.rawTime);
             });
           }
-          renderDeleteList();
+          renderEditList();
           btn.style.display = "flex";
         } catch (err) {
           container.innerHTML = `<p style="color:red; text-align:center;">❌ ${err.message}</p>`;
         }
       }
 
-      function renderDeleteList() {
-        const container = document.getElementById("deleteListContainer");
+      function renderEditList() {
+        const container = document.getElementById("editListContainer");
         container.innerHTML = "";
         if (currentAnimeData.length === 0) {
           container.innerHTML =
@@ -640,14 +775,17 @@
 
         currentAnimeData.forEach((anime) => {
           const item = document.createElement("div");
-          item.className = "delete-item";
+          item.className = "edit-item";
+          item.onclick = () => openEditForm(anime.id);
 
-          const cleanTitle = anime.title.replace(/<[^>]*>?/gm, "");
-          const timeDisplay = anime.rawTime ? ` - ${anime.rawTime}` : ""; // HIỂN THỊ THÊM GIỜ LÚC XOÁ CHO DỄ NHÌN
+          const cleanTitle = anime.title
+            .replace(/<[^>]*>?/gm, "")
+            .replace(/\^\^|##|\^|#/g, " ");
+          const timeDisplay = anime.rawTime ? ` - ${anime.rawTime}` : "";
 
           item.innerHTML = `
-          <div class="delete-title" title="${cleanTitle}">${cleanTitle} <br/><span style="font-size:0.8rem; color:#64748b;">(Lịch: ${anime.rawDay}${timeDisplay})</span></div>
-          <button class="btn-trash" onclick="removeAnimeFromList(${anime.id})" title="Xóa">
+          <div class="edit-title" title="${cleanTitle}">${cleanTitle} <br/><span style="font-size:0.8rem; color:#64748b;">(Lịch: ${anime.rawDay}${timeDisplay})</span></div>
+          <button class="btn-trash" onclick="event.stopPropagation(); removeAnimeFromList(${anime.id})" title="Xóa">
             <i class="fa-solid fa-trash"></i>
           </button>
         `;
@@ -655,16 +793,27 @@
         });
       }
 
+      // Xóa anime ra khỏi mảng cục bộ
       function removeAnimeFromList(id) {
+        const animeToDel = currentAnimeData.find((a) => a.id === id);
+        // Lưu lại poster của anime bị xóa vào danh sách chờ dọn dẹp
+        if (
+          animeToDel &&
+          animeToDel.poster &&
+          !deletedPosters.includes(animeToDel.poster)
+        ) {
+          deletedPosters.push(animeToDel.poster);
+        }
         currentAnimeData = currentAnimeData.filter((a) => a.id !== id);
-        renderDeleteList();
+        renderEditList();
       }
 
-      async function commitDelete() {
-        const btn = document.getElementById("deleteSubmitBtn");
+      // Nút "Lưu thay đổi" (Sau khi nhấn nút Xóa rác nhiều lần)
+      async function commitEdit() {
+        const btn = document.getElementById("editSubmitBtn");
         if (
           !confirm(
-            "Bạn có chắc chắn muốn lưu danh sách sau khi đã xóa? Web sẽ được cập nhật.",
+            "Bạn có chắc chắn muốn lưu thay đổi danh sách? Web sẽ được cập nhật.",
           )
         )
           return;
@@ -688,13 +837,48 @@
             conf.token,
             "data.json",
             newBase64Json,
-            "Xóa bớt anime",
+            "Xóa bớt / Cập nhật nhanh anime",
             dataSha,
           );
 
+          // Dọn dẹp các poster không còn dùng nữa sau khi đã lưu Json thành công
+          if (deletedPosters.length > 0) {
+            showStatus("info", "⏳ Đang dọn dẹp poster cũ trên GitHub...");
+            for (const posterPath of deletedPosters) {
+              // Kiểm tra xem poster này có tình cờ còn được dùng bởi 1 anime khác không
+              const isStillUsed = currentAnimeData.some(
+                (a) => a.poster === posterPath,
+              );
+              if (!isStillUsed) {
+                try {
+                  const existingFile = await githubGetFile(
+                    conf.repo,
+                    conf.token,
+                    posterPath,
+                  );
+                  if (existingFile) {
+                    await githubDeleteFile(
+                      conf.repo,
+                      conf.token,
+                      posterPath,
+                      `Xóa tự động poster cũ ${posterPath}`,
+                      existingFile.sha,
+                    );
+                  }
+                } catch (e) {
+                  console.warn(
+                    "Lỗi khi dọn poster (có thể file không tồn tại):",
+                    posterPath,
+                  );
+                }
+              }
+            }
+            deletedPosters = []; // Xóa xong thì reset mảng
+          }
+
           showStatus(
             "success",
-            "🎉 Xóa thành công! Dữ liệu mới đã được cập nhật.",
+            "🎉 Cập nhật thành công! Dữ liệu mới và ảnh đã được đồng bộ.",
           );
         } catch (err) {
           showStatus("error", "❌ Lỗi: " + err.message);
@@ -702,6 +886,166 @@
           btn.disabled = false;
         }
       }
+
+      function openEditForm(id) {
+        const anime = currentAnimeData.find((a) => a.id === id);
+        if (!anime) return;
+
+        document.getElementById("editListView").style.display = "none";
+        document.getElementById("editFormView").style.display = "block";
+        showStatus("", "");
+
+        let rawTitle = anime.title;
+        rawTitle = rawTitle.replace(/<br\s+class="br-mobile"\s*\/?>/g, "##");
+        rawTitle = rawTitle.replace(/<br\s+class="br-desktop"\s*\/?>/g, "#");
+
+        document.getElementById("editId").value = anime.id;
+        document.getElementById("editTitle").value = rawTitle;
+        document.getElementById("editCopyText").value = anime.copyText;
+        document.getElementById("editCurrentPoster").innerText =
+          "Đang dùng: " + anime.poster;
+        document.getElementById("editPosterFile").value = "";
+        document.getElementById("editRawDay").value = anime.rawDay;
+        document.getElementById("editRawTime").value = anime.rawTime || "";
+        document.getElementById("editMal").value = anime.malLink;
+        document.getElementById("editAs").value = anime.asLink;
+        document.getElementById("editWatch1").value = anime.watchLinks[0] || "";
+        document.getElementById("editWatch2").value = anime.watchLinks[1] || "";
+      }
+
+      function closeEditForm() {
+        document.getElementById("editFormView").style.display = "none";
+        document.getElementById("editListView").style.display = "block";
+        showStatus("", "");
+      }
+
+      // Xử lý việc Cập nhật cụ thể 1 anime (khi click vào vùng Form sửa)
+      document
+        .getElementById("editAnimeForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const btn = document.getElementById("editSaveBtn");
+          try {
+            const conf = getConfig();
+            btn.disabled = true;
+
+            const id = parseInt(document.getElementById("editId").value);
+            const animeIndex = currentAnimeData.findIndex((a) => a.id === id);
+            if (animeIndex === -1)
+              throw new Error("Không tìm thấy anime để sửa!");
+
+            const rawTitle = document.getElementById("editTitle").value.trim();
+            const parsedTitle = rawTitle
+              .replace(/\^\^|##/g, '<br class="br-mobile" />')
+              .replace(/\^|#/g, '<br class="br-desktop" />');
+
+            const oldPoster = currentAnimeData[animeIndex].poster;
+
+            const updatedAnime = {
+              ...currentAnimeData[animeIndex],
+              title: parsedTitle,
+              copyText: document.getElementById("editCopyText").value.trim(),
+              rawDay: document.getElementById("editRawDay").value.trim(),
+              rawTime: document.getElementById("editRawTime").value,
+              malLink: document.getElementById("editMal").value.trim(),
+              asLink: document.getElementById("editAs").value.trim(),
+              watchLinks: [],
+            };
+
+            const w1 = document.getElementById("editWatch1").value.trim();
+            const w2 = document.getElementById("editWatch2").value.trim();
+            if (w1) updatedAnime.watchLinks.push(w1);
+            if (w2) updatedAnime.watchLinks.push(w2);
+
+            const posterFile =
+              document.getElementById("editPosterFile").files[0];
+            if (posterFile) {
+              showStatus("info", "⏳ Đang tải Poster mới lên GitHub...");
+              const imageBase64 = await fileToBase64(posterFile);
+              const imgPath = `kv/${posterFile.name}`;
+              const existingImg = await githubGetFile(
+                conf.repo,
+                conf.token,
+                imgPath,
+              );
+              await githubPutFile(
+                conf.repo,
+                conf.token,
+                imgPath,
+                imageBase64,
+                `Update poster ${posterFile.name}`,
+                existingImg ? existingImg.sha : null,
+              );
+              updatedAnime.poster = imgPath;
+            }
+
+            currentAnimeData[animeIndex] = updatedAnime;
+
+            currentAnimeData.sort((a, b) => {
+              const dayDiff = getDayValue(a.rawDay) - getDayValue(b.rawDay);
+              if (dayDiff !== 0) return dayDiff;
+              return getTimeMinutes(a.rawTime) - getTimeMinutes(b.rawTime);
+            });
+
+            showStatus("info", "⏳ Đang cập nhật data.json...");
+            const dataFile = await githubGetFile(
+              conf.repo,
+              conf.token,
+              "data.json",
+            );
+            const dataSha = dataFile ? dataFile.sha : null;
+
+            const newJsonStr = JSON.stringify(currentAnimeData, null, 2);
+            const newBase64Json = encodeBase64UTF8(newJsonStr);
+            await githubPutFile(
+              conf.repo,
+              conf.token,
+              "data.json",
+              newBase64Json,
+              `Sửa anime: ${updatedAnime.copyText}`,
+              dataSha,
+            );
+
+            // Nếu có tải lên poster mới và tên file thay đổi -> Dọn luôn poster cũ
+            if (posterFile && oldPoster !== updatedAnime.poster) {
+              const isStillUsed = currentAnimeData.some(
+                (a) => a.poster === oldPoster,
+              );
+              if (!isStillUsed) {
+                try {
+                  showStatus("info", "⏳ Đang dọn dẹp poster cũ...");
+                  const existingFile = await githubGetFile(
+                    conf.repo,
+                    conf.token,
+                    oldPoster,
+                  );
+                  if (existingFile) {
+                    await githubDeleteFile(
+                      conf.repo,
+                      conf.token,
+                      oldPoster,
+                      `Dọn dẹp poster cũ ${oldPoster}`,
+                      existingFile.sha,
+                    );
+                  }
+                } catch (e) {
+                  console.warn("Lỗi khi dọn poster cũ trong lúc edit:", e);
+                }
+              }
+            }
+
+            showStatus(
+              "success",
+              "🎉 Đã sửa thành công! Vui lòng chờ 30s - 1 phút để web load lại data.",
+            );
+            closeEditForm();
+            renderEditList();
+          } catch (err) {
+            showStatus("error", "❌ Lỗi: " + err.message);
+          } finally {
+            btn.disabled = false;
+          }
+        });
     </script>
   </body>
 </html>
